@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THREAD — Nueva Colección</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F9F8F6; --surface: #FFFFFF; --text: #111111;
+      --text-muted: #888888; --accent: #C8622B; --accent-hover: #A8511F;
+      --border: #E6E4DF; --font: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px; padding: 0 40px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    nav::after {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background: rgba(249,248,246,0); backdrop-filter: blur(0px);
+      border-bottom: 1px solid transparent;
+      transition: background 0.35s, backdrop-filter 0.35s, border-color 0.35s;
+    }
+    nav.scrolled::after {
+      background: rgba(249,248,246,0.92);
+      backdrop-filter: blur(14px);
+      border-color: var(--border);
+    }
+    .logo { font-size: 16px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+    .logo em { font-style: normal; color: var(--accent); }
+    .nav-btn {
+      padding: 9px 22px; background: var(--text); color: #fff;
+      border-radius: 50px; font-size: 13px; font-weight: 600;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100dvh; min-height: 600px;
+      display: grid; place-items: center;
+      text-align: center; padding: 64px 24px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 65% 25%, rgba(200,98,43,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 15% 80%, rgba(200,98,43,0.06) 0%, transparent 65%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-tag {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent);
+      border: 1px solid rgba(200,98,43,0.32); border-radius: 50px;
+      padding: 5px 16px; margin-bottom: 36px;
+    }
+    h1 {
+      font-size: clamp(78px, 15vw, 172px); font-weight: 700;
+      line-height: 0.88; letter-spacing: -0.04em; margin-bottom: 10px;
+    }
+    h1 em {
+      display: block; font-style: italic; font-weight: 300;
+      color: var(--text-muted); font-size: 0.5em;
+      letter-spacing: -0.01em; margin-top: 8px;
+    }
+    .hero-sub {
+      font-size: clamp(14px, 1.8vw, 17px); color: var(--text-muted);
+      max-width: 360px; margin: 28px auto 44px; line-height: 1.7; font-weight: 400;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 34px; background: var(--accent); color: #fff;
+      border-radius: 50px; font-size: 14px; font-weight: 600;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    .btn-primary .arr { transition: transform 0.2s; }
+    .btn-primary:hover .arr { transform: translateX(4px); }
+
+    .scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .scroll-bar {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.25} 50%{opacity:1} }
+
+    /* ── CATEGORIES ── */
+    .section { padding: 100px 40px; max-width: 1160px; margin: 0 auto; }
+    .eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--text-muted); margin-bottom: 52px;
+    }
+    .cats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .cat {
+      aspect-ratio: 2/3; border-radius: 14px; overflow: hidden;
+      position: relative; display: block; cursor: pointer;
+    }
+    .cat-fill { position: absolute; inset: 0; transition: transform 0.5s ease; }
+    .cat:hover .cat-fill { transform: scale(1.05); }
+    .cat-shade {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0) 55%);
+    }
+    .cat-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 24px 22px; color: #fff;
+    }
+    .cat-info h3 { font-size: 20px; font-weight: 700; margin-bottom: 3px; }
+    .cat-info span { font-size: 12px; opacity: 0.65; }
+    .cat-chip {
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25); border-radius: 50px;
+      padding: 6px 14px; font-size: 11px; font-weight: 600; color: #fff;
+      opacity: 0; transform: translateY(-5px); transition: all 0.22s;
+    }
+    .cat:hover .cat-chip { opacity: 1; transform: translateY(0); }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      background: var(--text); color: #fff;
+      padding: 120px 40px; text-align: center;
+    }
+    .manifesto .eyebrow { color: var(--accent); }
+    .manifesto h2 {
+      font-size: clamp(28px, 5vw, 54px); font-weight: 700;
+      letter-spacing: -0.025em; line-height: 1.1;
+      max-width: 680px; margin: 0 auto 24px;
+    }
+    .manifesto p {
+      font-size: 16px; line-height: 1.8; color: rgba(255,255,255,0.52);
+      max-width: 460px; margin: 0 auto 52px;
+    }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 15px 34px; background: transparent; color: #fff;
+      border: 1px solid rgba(255,255,255,0.28); border-radius: 50px;
+      font-family: var(--font); font-size: 14px; font-weight: 600;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .btn-outline .arr { transition: transform 0.2s; }
+    .btn-outline:hover .arr { transform: translateX(4px); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 28px 40px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    footer small { font-size: 12px; color: var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .section { padding: 64px 20px; }
+      .cats { grid-template-columns: 1fr; gap: 12px; }
+      .cat { aspect-ratio: 4/3; }
+      .manifesto { padding: 80px 24px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo">THREAD<em> —</em></div>
+  <a href="thread-store.html" class="nav-btn">Ver tienda</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Nueva colección · 2025</div>
+    <h1>THREAD<em>Store</em></h1>
+    <p class="hero-sub">Prendas diseñadas para durar. Sin ruido, sin excesos. Solo lo que necesitas vestir.</p>
+    <a href="thread-store.html" class="btn-primary">
+      Ver colección
+      <svg class="arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-bar"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<div class="section">
+  <div class="eyebrow">Categorías</div>
+  <div class="cats">
+
+    <a href="thread-store.html" class="cat" onclick="setFilter('camisetas')">
+      <div class="cat-fill" style="background:linear-gradient(148deg,#D4C5B5 0%,#2C2C2C 100%)"></div>
+      <div class="cat-shade"></div>
+      <div class="cat-info"><h3>Camisetas</h3><span>2 productos</span></div>
+      <div class="cat-chip">Ver →</div>
+    </a>
+
+    <a href="thread-store.html" class="cat" onclick="setFilter('pantalones')">
+      <div class="cat-fill" style="background:linear-gradient(148deg,#7A7060 0%,#4A4A4A 100%)"></div>
+      <div class="cat-shade"></div>
+      <div class="cat-info"><h3>Pantalones</h3><span>2 productos</span></div>
+      <div class="cat-chip">Ver →</div>
+    </a>
+
+    <a href="thread-store.html" class="cat" onclick="setFilter('accesorios')">
+      <div class="cat-fill" style="background:linear-gradient(148deg,#C9B8A0 0%,#E8DDD0 100%)"></div>
+      <div class="cat-shade"></div>
+      <div class="cat-info"><h3>Accesorios</h3><span>2 productos</span></div>
+      <div class="cat-chip">Ver →</div>
+    </a>
+
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="eyebrow">Nuestra filosofía</div>
+  <h2>Cada pieza,<br>una decisión consciente</h2>
+  <p>No seguimos tendencias. Creamos ropa que encaja con tu vida, que aguanta el tiempo y que siempre encuentra su lugar en tu armario.</p>
+  <a href="thread-store.html" class="btn-outline">
+    Entrar a la tienda
+    <svg class="arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </svg>
+  </a>
+</section>
+
+<footer>
+  <div class="logo">THREAD<em style="font-style:normal;color:var(--accent)"> —</em></div>
+  <small>© 2025 THREAD. Demo de concepto.</small>
+</footer>
+
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', scrollY > 40);
+  });
+
+  function setFilter(cat) {
+    localStorage.setItem('thread_initial_filter', cat);
+  }
+</script>
+</body>
+</html>
